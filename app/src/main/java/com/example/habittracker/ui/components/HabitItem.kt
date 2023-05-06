@@ -36,13 +36,15 @@ fun HabitItem(habit: HabitData, highlightDivision: Boolean) {
             text = dayOfMonth.toString(),
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
-            modifier = Modifier.width(30.dp)
+            modifier = Modifier.width(30.dp),
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = habit.day.toString(),
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
-            modifier = Modifier.width(30.dp)
+            modifier = Modifier.width(30.dp),
+            color = MaterialTheme.colorScheme.onBackground
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

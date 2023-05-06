@@ -18,17 +18,24 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun FooterForHabits() {
+    var showAddHabitView by remember {
+        mutableStateOf(false)
+    }
+
     Card(
         shape = CardDefaults.elevatedShape,
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.onPrimary, contentColor = Color.Black),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.onPrimary, contentColor = MaterialTheme.colorScheme.onBackground),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -60,11 +67,16 @@ fun FooterForHabits() {
                 }
             }
             FloatingActionButton(
-                onClick = { /* do something */ },
+                onClick = {
+                          showAddHabitView = true
+                },
                 containerColor = MaterialTheme.colorScheme.tertiary
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
             }
+        }
+        if (showAddHabitView) {
+            AddHabitSheet(onDismiss = {showAddHabitView = false})
         }
     }
 }
