@@ -1,4 +1,4 @@
-package com.example.habittracker.ui.components
+package com.example.habittracker.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.habittracker.models.HabitData
+import com.example.habittracker.model.HabitData
 import java.util.Calendar
 
 @Composable

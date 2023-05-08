@@ -1,4 +1,4 @@
-package com.example.habittracker.ui.components
+package com.example.habittracker.ui.component
 
 import android.view.Gravity
 import androidx.compose.foundation.background

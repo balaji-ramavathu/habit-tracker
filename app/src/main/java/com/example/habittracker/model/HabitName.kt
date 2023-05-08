@@ -1,4 +1,4 @@
-package com.example.habittracker.models
+package com.example.habittracker.model
 
 data class HabitName(
     val name: String,

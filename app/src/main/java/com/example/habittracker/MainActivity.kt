@@ -13,11 +13,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.habittracker.models.HabitData
-import com.example.habittracker.models.HabitName
-import com.example.habittracker.ui.components.FooterForHabits
-import com.example.habittracker.ui.components.HabitList
-import com.example.habittracker.ui.components.TopBar
+import com.example.habittracker.model.HabitData
+import com.example.habittracker.model.HabitName
+import com.example.habittracker.ui.component.FooterForHabits
+import com.example.habittracker.ui.component.HabitList
+import com.example.habittracker.ui.component.TopBar
 import com.example.habittracker.ui.theme.HabitTrackerTheme
 import java.util.Calendar
 import java.util.Date

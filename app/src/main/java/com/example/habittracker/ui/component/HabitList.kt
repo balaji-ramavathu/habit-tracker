@@ -1,4 +1,4 @@
-package com.example.habittracker.ui.components
+package com.example.habittracker.ui.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.habittracker.models.HabitData
+import com.example.habittracker.model.HabitData
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale

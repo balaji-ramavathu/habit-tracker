@@ -1,4 +1,4 @@
-package com.example.habittracker.ui.components
+package com.example.habittracker.ui.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle

@@ -1,4 +1,4 @@
-package com.example.habittracker.ui.components
+package com.example.habittracker.ui.component
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
