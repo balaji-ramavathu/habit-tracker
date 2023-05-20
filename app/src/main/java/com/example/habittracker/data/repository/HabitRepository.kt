@@ -13,17 +13,39 @@ class HabitRepository (private val habitDao: HabitDao) {
         return habitDao.byId(id)
     }
 
-    suspend fun addOrUpdateNewHabit(habit: Habit): Habit {
+    fun addHabit(habit: Habit) {
         require(validate(habit)) { "Invalid Habit input request" }
 
-        return habitDao.insertHabit(habit)
+        habitDao.insertHabit(habit)
+    }
+
+    fun updateHabit(habit: Habit) {
+        require(validate(habit)) { "Invalid Habit input request" }
+
+        habitDao.updateHabit(habit)
+    }
+    fun archiveHabit(habit: Habit) {
+        habitDao.updateHabit(habit.copy(archived = true))
+    }
+
+    fun deleteHabit(habit: Habit) {
+        habitDao.delete(habit)
     }
 
     private fun validate(habit: Habit): Boolean {
-        require(habit.name.isBlank()) { "Habit name shouldn't be empty" }
-        require(habit.indicator.isBlank()) { "Habit indicator shouldn't be empty" }
-        require(habit.color.isBlank()) { "Habit color shouldn't be empty" }
+        require(habit.name.isNotBlank()) { "Habit name shouldn't be empty" }
+        require(habit.indicator.isNotBlank()) { "Habit indicator shouldn't be empty" }
+        require(habit.color.isNotBlank()) { "Habit color shouldn't be empty" }
 
         return true
+    }
+
+    companion object {
+        @Volatile
+        private var instance: HabitRepository? = null
+        fun getInstance(dao: HabitDao): HabitRepository =
+            instance ?: synchronized(this) {
+                instance ?: HabitRepository(dao)
+            }.also { instance = it }
     }
 }

@@ -11,7 +11,7 @@ import com.example.habittracker.data.entity.HabitStreak
 interface HabitStreakDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHabitStreak(habit: HabitStreak)
+    fun insertHabitStreak(habit: HabitStreak)
 
     @Query("SELECT * FROM habit_streaks")
     fun getAll(): List<HabitStreak>
@@ -23,7 +23,7 @@ interface HabitStreakDao {
     fun loadAllByHabitIds(habitIds: IntArray): List<HabitStreak>
 
     @Insert
-    fun insertAll(vararg habitStreaks: List<HabitStreak>)
+    fun insertAll(vararg habitStreaks: HabitStreak)
 
     @Delete
     fun delete(habitStreak: HabitStreak)

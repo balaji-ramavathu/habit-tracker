@@ -11,7 +11,7 @@ import com.example.habittracker.data.entity.HabitEntry
 interface HabitEntryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHabitEntry(habit: HabitEntry)
+    fun insertHabitEntry(habit: HabitEntry)
 
     @Query("SELECT * FROM habit_entries")
     fun getAll(): List<HabitEntry>

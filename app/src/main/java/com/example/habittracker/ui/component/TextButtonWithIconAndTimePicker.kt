@@ -12,8 +12,6 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -32,16 +30,20 @@ import androidx.compose.ui.unit.dp
 import com.example.habittracker.ui.theme.HabitTrackerTheme
 
 @Composable
-fun TextButtonWithIconAndDropdownMenu(text: String, iconPainter: Painter? = null, iconVector: ImageVector? = null, options: List<String>, onSelected: () -> Unit) {
+fun TextButtonWithIconAndTimePicker(
+    text: String, iconPainter: Painter? = null,
+    iconVector: ImageVector? = null,
+    onSelected: (time: String) -> Unit) {
     var expanded by remember {
         mutableStateOf(false)
     }
-    var selectedIndex by remember {
-        mutableStateOf<Int?>(null)
+
+    var time by remember {
+        mutableStateOf("")
     }
 
     Box {
-        if (selectedIndex == null) {
+        if (time.isBlank()) {
             Button(
                 onClick = { expanded = true },
                 colors = ButtonDefaults.buttonColors(
@@ -64,11 +66,11 @@ fun TextButtonWithIconAndDropdownMenu(text: String, iconPainter: Painter? = null
             }
         } else {
             AssistChip(
-                onClick = { selectedIndex = null },
+                onClick = { time = "" },
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Close, contentDescription = null, Modifier.size(16.dp))
                 },
-                label = { Text(text = options[selectedIndex!!])},
+                label = { Text(text = time)},
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     trailingIconContentColor = MaterialTheme.colorScheme.onBackground,
@@ -77,45 +79,18 @@ fun TextButtonWithIconAndDropdownMenu(text: String, iconPainter: Painter? = null
                 modifier = Modifier.padding(8.dp)
             )
         }
-
-        if (expanded) {
-            DropdownMenu(expanded = expanded,
-                onDismissRequest = { /*TODO*/ }) {
-                options.forEachIndexed {index, option ->
-                    DropdownMenuItem(
-                        text = { Text(text = option)},
-                        onClick = {
-                            selectedIndex = index
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun IconWithPainterOrVector(iconPainter: Painter? = null, iconVector: ImageVector? = null) {
-    if (iconPainter != null) {
-        Icon(
-            painter = iconPainter,
-            contentDescription = null,
-            tint = LocalContentColor.current
-        )
-    }
-    else if (iconVector != null) {
-        Icon(
-            imageVector = iconVector,
-            contentDescription = null,
-            tint = LocalContentColor.current
+        TimePicker(
+            label = "Select reminder time",
+            value = time,
+            onValueChange = {value -> time = value},
+            showDialog = expanded
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TextButtonWithIconAndDropdownMenuPreview() {
+fun TextButtonWithIconAndTimePicker() {
     HabitTrackerTheme {
         AssistChip(
             onClick = {  },

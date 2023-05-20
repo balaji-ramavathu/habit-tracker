@@ -4,16 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.habittracker.data.dao.HabitDao
 import com.example.habittracker.data.dao.HabitEntryDao
 import com.example.habittracker.data.dao.HabitStreakDao
 import com.example.habittracker.data.entity.Habit
 import com.example.habittracker.data.entity.HabitEntry
+import com.example.habittracker.data.entity.HabitRepeatTypeConverter
 import com.example.habittracker.data.entity.HabitStreak
+import com.example.habittracker.data.entity.HabitTypeConverter
 import com.example.habittracker.data.Database as HabitDatabase
 
 
 @Database(entities = [Habit::class, HabitEntry::class, HabitStreak::class], version = 1, exportSchema = false)
+@TypeConverters(HabitTypeConverter::class, HabitRepeatTypeConverter::class)
 abstract class Database : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao

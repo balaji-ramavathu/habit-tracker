@@ -23,7 +23,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,22 +33,22 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.example.habittracker.R
-import com.example.habittracker.ui.theme.HabitTrackerTheme
+import com.example.habittracker.ui.model.AddOrUpdateHabitRequest
+import com.example.habittracker.ui.model.UiRepeatType
+import com.example.habittracker.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.android.awaitFrame
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun AddHabitContent() {
+fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
-    val textValue = remember {
-        mutableStateOf("")
-    }
+
+    val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
     Column(
         Modifier
             .fillMaxWidth()
@@ -58,7 +58,7 @@ fun AddHabitContent() {
     ) {
         Row (Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround){
             OutlinedTextField(
-                value = textValue.value,
+                value = addOrUpdateHabitRequest.value?.name ?: "",
                 label = { Text(text = "What's the habit?") },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = MaterialTheme.colorScheme.onBackground,
@@ -69,11 +69,15 @@ fun AddHabitContent() {
                     disabledLabelColor = MaterialTheme.colorScheme.onBackground,
                     cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
                     .focusRequester(focusRequester),
-                onValueChange = {value -> textValue.value = value})
+                onValueChange = {value -> mainViewModel.recordAddOrUpdateHabitRequestInfo(
+                    (addOrUpdateHabitRequest.value)?.copy(name = value)
+                        ?: AddOrUpdateHabitRequest(name = value))
+                })
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = {onAddHabitRequest()},
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .background(
@@ -90,17 +94,26 @@ fun AddHabitContent() {
             TextButtonWithIconAndDropdownMenu(
                 text = "Repeat",
                 iconPainter = painterResource(id = R.drawable.baseline_repeat_black_24dp),
-                options = listOf("Daily", "Weekdays", "Weekly", "Monthly", "Yearly")) {
+                options = UiRepeatType.values().map { it.displayName },
+            ) { selectedIndex ->
+                mainViewModel.recordAddOrUpdateHabitRequestInfo(
+                    (mainViewModel.addOrUpdateHabitData.value ?: AddOrUpdateHabitRequest())
+                        .copy(repeatType = UiRepeatType.values()[selectedIndex])
+                )
             }
             TextButtonWithIconAndDropdownMenu(
                 text = "Color",
                 iconPainter = painterResource(id = R.drawable.baseline_palette_black_24dp),
                 options = listOf("Yellow", "Blue", "Green")) {
             }
-            TextButtonWithIconAndDropdownMenu(
+            TextButtonWithIconAndTimePicker(
                 text = "Remind",
-                iconVector = Icons.Default.Notifications,
-                options = listOf("Daily, 8 am","Daily, 9 am","Daily, 10 am","Daily, 11 am")) {
+                iconVector = Icons.Default.Notifications
+            ) { time ->
+                mainViewModel.recordAddOrUpdateHabitRequestInfo(
+                    (mainViewModel.addOrUpdateHabitData.value ?: AddOrUpdateHabitRequest())
+                        .copy(reminderTime = time)
+                )
             }
         }
     }
@@ -114,7 +127,10 @@ fun AddHabitContent() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddHabitSheet(onDismiss: () -> Unit) {
+fun AddHabitSheet(
+    mainViewModel: MainViewModel,
+    onAddOrUpdateHabitRequest: () -> Unit,
+    onDismiss: () -> Unit) {
     AlertDialog(onDismissRequest = { onDismiss() },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -127,16 +143,7 @@ fun AddHabitSheet(onDismiss: () -> Unit) {
     ) {
         val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
         dialogWindowProvider.window.setGravity(Gravity.BOTTOM)
-        AddHabitContent()
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddHabitPreview() {
-    HabitTrackerTheme {
-        AddHabitSheet {}
+        AddHabitContent(mainViewModel, onAddOrUpdateHabitRequest)
     }
 
 }

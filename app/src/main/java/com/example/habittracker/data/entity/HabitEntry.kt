@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -16,8 +15,8 @@ import androidx.room.PrimaryKey
             childColumns = ["habit_id"],
             onDelete = CASCADE
         )
-    ],
-    indices = [Index("habit_id")]
+    ]
+//    indices = [Index("habit_id")]
 )
 data class HabitEntry(
     @PrimaryKey(autoGenerate = true)

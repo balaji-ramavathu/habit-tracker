@@ -2,7 +2,7 @@ package com.example.habittracker.ui.component
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -44,8 +45,11 @@ fun CustomCheckbox(
                 } else {
                     Color.Gray
                 }
-            )
-            .clickable(enabled = enabled) { onCheckedChange(!checked) },
+            ).pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    onCheckedChange(!checked)
+                })
+            },
         contentAlignment = Alignment.Center
     ) {
         if (checked) {

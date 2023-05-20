@@ -18,20 +18,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.habittracker.ui.viewmodel.MainViewModel
 
 @Composable
-fun FooterForHabits() {
-    var showAddHabitView by remember {
-        mutableStateOf(false)
-    }
+fun FloatingActionView(mainViewModel: MainViewModel) {
+
+    val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
+    val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
 
     Card(
         shape = CardDefaults.elevatedShape,
@@ -68,15 +66,25 @@ fun FooterForHabits() {
             }
             FloatingActionButton(
                 onClick = {
-                          showAddHabitView = true
+                          mainViewModel.showOrHideAddOrUpdateHabitView(true)
                 },
                 containerColor = MaterialTheme.colorScheme.tertiary
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
             }
         }
-        if (showAddHabitView) {
-            AddHabitSheet(onDismiss = {showAddHabitView = false})
+        if (showAddOrUpdateAddHabitView.value) {
+            AddHabitSheet(
+                mainViewModel = mainViewModel,
+                onDismiss = {
+                    mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                },
+                onAddOrUpdateHabitRequest = {
+                    addOrUpdateHabitRequest.value?.let {
+                        mainViewModel.addHabit(it)
+                        mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                } }
+            )
         }
     }
 }

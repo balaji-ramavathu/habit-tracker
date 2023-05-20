@@ -16,15 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.habittracker.model.HabitData
-import java.util.Calendar
+import com.example.habittracker.ui.model.HabitListItem
 
 @Composable
-fun HabitItem(habit: HabitData, highlightDivision: Boolean) {
-    val calendar = Calendar.getInstance().apply {
-        time = habit.date
-    }
-    val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+fun HabitItem(habit: HabitListItem, highlightDivision: Boolean) {
+
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -33,14 +29,14 @@ fun HabitItem(habit: HabitData, highlightDivision: Boolean) {
             .padding(8.dp)
     ) {
         Text(
-            text = dayOfMonth.toString(),
+            text = habit.date.toString(),
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             modifier = Modifier.width(30.dp),
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = habit.day.toString(),
+            text = habit.day,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             modifier = Modifier.width(30.dp),
@@ -50,11 +46,11 @@ fun HabitItem(habit: HabitData, highlightDivision: Boolean) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(2f)
         ) {
-            habit.habits.forEach { habitName ->
+            habit.habitEntries.forEach { habitEntry ->
                 CustomCheckbox(
-                    checked = habitName.done,
+                    checked = habitEntry.value,
                     onCheckedChange = { checked ->
-                        habitName.done = checked
+                        // TODO
                     },
                     modifier = Modifier.size(24.dp)
                 )
