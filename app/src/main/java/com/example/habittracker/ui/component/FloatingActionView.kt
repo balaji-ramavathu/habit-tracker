@@ -30,6 +30,7 @@ fun FloatingActionView(mainViewModel: MainViewModel) {
 
     val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
     val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
+    val habits = mainViewModel.habits.observeAsState(listOf())
 
     Card(
         shape = CardDefaults.elevatedShape,
@@ -44,24 +45,11 @@ fun FloatingActionView(mainViewModel: MainViewModel) {
                 .padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Box(modifier = Modifier.height(60.dp)) {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(text = "B - Books",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
-                    Text(text = "E - Exercise",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
-                    Text(text = "M - Meditation",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
-                    Text(text = "G - Engg",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
-                    Text(text = "E - Exercise",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
-                    Text(text = "M - Meditation",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp)
+                    habits.value.map {
+                        Text(text = "${it.indicator} - ${it.name}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp)
+                    }
                 }
             }
             FloatingActionButton(
@@ -74,16 +62,24 @@ fun FloatingActionView(mainViewModel: MainViewModel) {
             }
         }
         if (showAddOrUpdateAddHabitView.value) {
-            AddHabitSheet(
+            AddOrUpdateHabitSheet(
                 mainViewModel = mainViewModel,
                 onDismiss = {
                     mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                    mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
                 },
                 onAddOrUpdateHabitRequest = {
                     addOrUpdateHabitRequest.value?.let {
-                        mainViewModel.addHabit(it)
+                        mainViewModel.addOrUpdateHabit(it)
                         mainViewModel.showOrHideAddOrUpdateHabitView(false)
-                } }
+                        mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
+                } },
+                onDeleteHabitRequest = {
+                    addOrUpdateHabitRequest.value?.id?.let { mainViewModel.deleteHabit(it) }.also {
+                        mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                        mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
+                    }
+                }
             )
         }
     }

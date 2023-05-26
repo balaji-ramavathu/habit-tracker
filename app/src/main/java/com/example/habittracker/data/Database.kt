@@ -16,7 +16,7 @@ import com.example.habittracker.data.entity.HabitTypeConverter
 import com.example.habittracker.data.Database as HabitDatabase
 
 
-@Database(entities = [Habit::class, HabitEntry::class, HabitStreak::class], version = 1, exportSchema = false)
+@Database(entities = [Habit::class, HabitEntry::class, HabitStreak::class], version = 2, exportSchema = false)
 @TypeConverters(HabitTypeConverter::class, HabitRepeatTypeConverter::class)
 abstract class Database : RoomDatabase() {
 

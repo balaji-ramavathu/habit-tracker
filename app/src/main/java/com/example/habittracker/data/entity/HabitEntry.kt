@@ -30,5 +30,8 @@ data class HabitEntry(
 
     val completed: Boolean,
 
-    val note: String? = null
+    val note: String? = null,
+
+    val addedAt: Long,
+    val updatedAt: Long
 )

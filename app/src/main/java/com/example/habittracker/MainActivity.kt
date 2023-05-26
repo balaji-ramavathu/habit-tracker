@@ -28,7 +28,7 @@ import com.example.habittracker.ui.viewmodel.ViewModelFactory
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        ViewModelFactory.getInstance(this, application)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

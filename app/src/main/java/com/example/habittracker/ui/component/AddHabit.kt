@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,7 +45,8 @@ import kotlinx.coroutines.android.awaitFrame
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit) {
+fun AddOrUpdateHabitContent(mainViewModel: MainViewModel,
+                            onAddOrUpdateHabitRequest: () -> Unit, onDeleteHabitRequest: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
@@ -77,7 +79,9 @@ fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit)
                         ?: AddOrUpdateHabitRequest(name = value))
                 })
             IconButton(
-                onClick = {onAddHabitRequest()},
+                onClick = {onAddOrUpdateHabitRequest()},
+                enabled = (addOrUpdateHabitRequest.value != null &&
+                        addOrUpdateHabitRequest.value?.name?.isNotBlank() == true),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .background(
@@ -87,6 +91,21 @@ fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit)
             ) {
                 Icon(painter = painterResource(id = R.drawable.baseline_arrow_upward_black_24dp), null)
             }
+
+            if (addOrUpdateHabitRequest.value != null &&
+                addOrUpdateHabitRequest.value?.id != null) {
+                IconButton(
+                    onClick = {onDeleteHabitRequest()},
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .background(
+                            color = MaterialTheme.colorScheme.error,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                ) {
+                    Icon(imageVector = Icons.Default.Delete, null)
+                }
+            }
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -95,20 +114,25 @@ fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit)
                 text = "Repeat",
                 iconPainter = painterResource(id = R.drawable.baseline_repeat_black_24dp),
                 options = UiRepeatType.values().map { it.displayName },
+                selectedOptionIndex = addOrUpdateHabitRequest.value?.repeatType?.let {
+                    UiRepeatType.values()
+                        .indexOf(it)
+                }
             ) { selectedIndex ->
                 mainViewModel.recordAddOrUpdateHabitRequestInfo(
                     (mainViewModel.addOrUpdateHabitData.value ?: AddOrUpdateHabitRequest())
                         .copy(repeatType = UiRepeatType.values()[selectedIndex])
                 )
             }
-            TextButtonWithIconAndDropdownMenu(
-                text = "Color",
-                iconPainter = painterResource(id = R.drawable.baseline_palette_black_24dp),
-                options = listOf("Yellow", "Blue", "Green")) {
-            }
+//            TextButtonWithIconAndDropdownMenu(
+//                text = "Color",
+//                iconPainter = painterResource(id = R.drawable.baseline_palette_black_24dp),
+//                options = listOf("Yellow", "Blue", "Green")) {
+//            }
             TextButtonWithIconAndTimePicker(
                 text = "Remind",
-                iconVector = Icons.Default.Notifications
+                iconVector = Icons.Default.Notifications,
+                selectedValue = addOrUpdateHabitRequest.value?.reminderTime
             ) { time ->
                 mainViewModel.recordAddOrUpdateHabitRequestInfo(
                     (mainViewModel.addOrUpdateHabitData.value ?: AddOrUpdateHabitRequest())
@@ -127,9 +151,10 @@ fun AddHabitContent(mainViewModel: MainViewModel, onAddHabitRequest: () -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddHabitSheet(
+fun AddOrUpdateHabitSheet(
     mainViewModel: MainViewModel,
     onAddOrUpdateHabitRequest: () -> Unit,
+    onDeleteHabitRequest: () -> Unit,
     onDismiss: () -> Unit) {
     AlertDialog(onDismissRequest = { onDismiss() },
         properties = DialogProperties(
@@ -143,7 +168,7 @@ fun AddHabitSheet(
     ) {
         val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
         dialogWindowProvider.window.setGravity(Gravity.BOTTOM)
-        AddHabitContent(mainViewModel, onAddOrUpdateHabitRequest)
+        AddOrUpdateHabitContent(mainViewModel, onAddOrUpdateHabitRequest, onDeleteHabitRequest)
     }
 
 }

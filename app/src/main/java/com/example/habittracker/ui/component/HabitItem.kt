@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,10 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habittracker.ui.model.HabitListItem
+import com.example.habittracker.ui.viewmodel.MainViewModel
+
 
 @Composable
-fun HabitItem(habit: HabitListItem, highlightDivision: Boolean) {
-
+fun HabitItem(habit: HabitListItem,
+              highlightDivision: Boolean,
+              mainViewModel: MainViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -42,16 +47,17 @@ fun HabitItem(habit: HabitListItem, highlightDivision: Boolean) {
             modifier = Modifier.width(30.dp),
             color = MaterialTheme.colorScheme.onBackground
         )
-        Row(
+        LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(2f)
         ) {
-            habit.habitEntries.forEach { habitEntry ->
-                CustomCheckbox(
-                    checked = habitEntry.value,
-                    onCheckedChange = { checked ->
-                        // TODO
-                    },
+            items(habit.habitEntries.toList()) {habitEntry ->
+                val (habitId, completed) = habitEntry
+                HabitEntryCheckbox(
+                    habitId = habitId,
+                    date = habit.date,
+                    checked = completed,
+                    mainViewModel = mainViewModel,
                     modifier = Modifier.size(24.dp)
                 )
             }

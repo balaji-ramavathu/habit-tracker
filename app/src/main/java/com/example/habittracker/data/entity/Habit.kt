@@ -37,7 +37,10 @@ data class Habit(
     val archived: Boolean = false,
 
     @ColumnInfo(name = "added_at")
-    val addedAt: Long
+    val addedAt: Long,
+
+    @ColumnInfo(name = "updated_at")
+    val updatedAt: Long
 )
 
 
@@ -54,7 +57,7 @@ data class HabitRepeatInfo(
 )
 
 enum class HabitRepeatType {
-    DAILY, WEEKLY, MONTHLY, YEARLY, CUSTOM, NONE
+    DAILY, WEEKLY, MONTHLY, YEARLY
 }
 
 data class HabitReminderInfo(

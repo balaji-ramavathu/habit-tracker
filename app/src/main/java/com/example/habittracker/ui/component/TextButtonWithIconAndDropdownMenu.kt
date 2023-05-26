@@ -36,12 +36,13 @@ fun TextButtonWithIconAndDropdownMenu(
     text: String, iconPainter: Painter? = null,
     iconVector: ImageVector? = null,
     options: List<String>,
+    selectedOptionIndex: Int? = null,
     onSelected: (selectedIndex: Int) -> Unit) {
     var expanded by remember {
         mutableStateOf(false)
     }
     var selectedIndex by remember {
-        mutableStateOf<Int?>(null)
+        mutableStateOf(selectedOptionIndex)
     }
 
     Box {

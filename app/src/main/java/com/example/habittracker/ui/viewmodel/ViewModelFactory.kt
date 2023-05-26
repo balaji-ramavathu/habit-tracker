@@ -1,17 +1,24 @@
 package com.example.habittracker.ui.viewmodel
 
+import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.habittracker.data.repository.HabitEntryRepository
 import com.example.habittracker.data.repository.HabitRepository
 import com.example.habittracker.di.Injection
 
-class ViewModelFactory(private val repository: HabitRepository
+class ViewModelFactory(
+    private val habitRepository: HabitRepository,
+    private val habitEntryRepository: HabitEntryRepository,
+    private val application: Application
 ) : ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(MainViewModel::class.java) -> MainViewModel(repository) as T
+            modelClass.isAssignableFrom(MainViewModel::class.java) -> MainViewModel(
+                habitRepository, habitEntryRepository, application
+            ) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
@@ -19,10 +26,12 @@ class ViewModelFactory(private val repository: HabitRepository
     companion object {
         @Volatile
         private var instance: ViewModelFactory? = null
-        fun getInstance(context: Context): ViewModelFactory =
+        fun getInstance(context: Context, application: Application): ViewModelFactory =
             instance ?: synchronized(this) {
                 instance ?: ViewModelFactory(
-                    Injection.provideRepository(context),
+                    Injection.provideHabitRepository(context),
+                    Injection.provideHabitEntryRepository(context),
+                    application
                 )
             }.also { instance = it }
     }

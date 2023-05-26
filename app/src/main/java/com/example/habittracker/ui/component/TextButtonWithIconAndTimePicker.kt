@@ -33,13 +33,14 @@ import com.example.habittracker.ui.theme.HabitTrackerTheme
 fun TextButtonWithIconAndTimePicker(
     text: String, iconPainter: Painter? = null,
     iconVector: ImageVector? = null,
+    selectedValue: String? = null,
     onSelected: (time: String) -> Unit) {
     var expanded by remember {
         mutableStateOf(false)
     }
 
     var time by remember {
-        mutableStateOf("")
+        mutableStateOf(selectedValue ?: "")
     }
 
     Box {
@@ -82,7 +83,11 @@ fun TextButtonWithIconAndTimePicker(
         TimePicker(
             label = "Select reminder time",
             value = time,
-            onValueChange = {value -> time = value},
+            onValueChange = { value ->
+                time = value
+                expanded = false
+                onSelected(value)
+            },
             showDialog = expanded
         )
     }
