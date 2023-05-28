@@ -143,7 +143,6 @@ class MainViewModel(
                                     it
                                 )
                             },
-                            addedAt = System.currentTimeMillis(),
                             updatedAt = System.currentTimeMillis()
                         )
                         habitRepository.updateHabit(updatedHabit).also {

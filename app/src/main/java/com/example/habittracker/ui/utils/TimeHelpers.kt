@@ -48,6 +48,7 @@ fun getDatesAndDaysForMonth(year: Int, month: Int): List<Pair<Int, String>> {
 }
 fun getFirstAndLastDayOfMonth(year: Int, month: Int): Pair<Long, Long> {
     val calendar = Calendar.getInstance()
+    calendar.clear()
     calendar.set(year, month - 1, 1) // Month is zero-based in Calendar, so subtract 1
 
     val firstDayInMillis = calendar.timeInMillis
@@ -76,6 +77,11 @@ fun getDurationLeftFromNow(desiredTime: LocalTime): Duration {
     else {
         desiredDateTime
     }
-    return Duration.between(now, nextDateTime)
+    val duration = Duration.between(now, nextDateTime)
 
+    return if (duration.isNegative) {
+        duration.plusDays(1)
+    } else {
+        duration
+    }
 }

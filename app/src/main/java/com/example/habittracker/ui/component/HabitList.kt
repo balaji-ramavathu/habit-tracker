@@ -128,7 +128,7 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                     }
                 }
             }
-            items(habitList.value) { habit ->
+            items(habitList.value, key = {habit -> "${habit.date}"}) { habit ->
                 HabitItem(
                     mainViewModel = mainViewModel,
                     habit = habit,

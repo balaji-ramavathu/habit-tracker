@@ -51,7 +51,8 @@ fun HabitItem(habit: HabitListItem,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(2f)
         ) {
-            items(habit.habitEntries.toList()) {habitEntry ->
+            items(habit.habitEntries.toList(),
+                key = {habitEntry -> "${habitEntry.first}::${habit.date}"}) {habitEntry ->
                 val (habitId, completed) = habitEntry
                 HabitEntryCheckbox(
                     habitId = habitId,
