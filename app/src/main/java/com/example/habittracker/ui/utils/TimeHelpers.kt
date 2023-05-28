@@ -1,6 +1,7 @@
 package com.example.habittracker.ui.utils
 
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Calendar
@@ -84,4 +85,11 @@ fun getDurationLeftFromNow(desiredTime: LocalTime): Duration {
     } else {
         duration
     }
+}
+
+fun getDaysBetweenTwoDates(date1: Long, date2: Long): Int {
+    val instant1 = Instant.ofEpochMilli(date1)
+    val instant2 = Instant.ofEpochMilli(date2)
+    val duration = Duration.between(instant1, instant2).abs()
+    return duration.toDays().toInt()
 }

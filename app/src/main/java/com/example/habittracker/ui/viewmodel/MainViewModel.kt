@@ -19,9 +19,11 @@ import com.example.habittracker.data.repository.HabitEntryRepository
 import com.example.habittracker.data.repository.HabitRepository
 import com.example.habittracker.data.worker.HabitNotificationWorker
 import com.example.habittracker.ui.model.AddOrUpdateHabitRequest
+import com.example.habittracker.ui.model.HabitEntryState
 import com.example.habittracker.ui.model.HabitListItem
 import com.example.habittracker.ui.utils.getDateMillis
 import com.example.habittracker.ui.utils.getDatesAndDaysForMonth
+import com.example.habittracker.ui.utils.getDaysBetweenTwoDates
 import com.example.habittracker.ui.utils.getDurationLeftFromNow
 import com.example.habittracker.ui.utils.getFirstAndLastDayOfMonth
 import com.example.habittracker.ui.utils.getMonthNameShort
@@ -96,9 +98,26 @@ class MainViewModel(
 
                 getDatesAndDaysForMonth(year, month).map { dateDay ->
                     val habitEntries = habits.associate { habit ->
-                        habit.id to (habitEntriesMap[habit.id]?.firstOrNull { entry ->
-                            entry.date == getDateMillis(year, month, dateDay.first)
+                        val dateMillis = getDateMillis(year, month, dateDay.first)
+                        val completed = (habitEntriesMap[habit.id]?.firstOrNull { entry ->
+                            entry.date == dateMillis
                         }?.completed ?: false)
+                        val state = if (completed) {
+                            HabitEntryState.COMPLETED
+                        } else {
+                            val previousLatestEntry = habitEntriesMap[habit.id]
+                                ?.filter { it.date <= dateMillis }
+                                ?.maxByOrNull { it.date }
+                            if (previousLatestEntry == null) {
+                                HabitEntryState.APPLICABLE_AND_INCOMPLETE
+                            }
+                            else if (!habitApplicable(previousLatestEntry, dateMillis, habit.repeatInfo)) {
+                                HabitEntryState.NOT_APPLICABLE
+                            } else {
+                                HabitEntryState.APPLICABLE_AND_INCOMPLETE
+                            }
+                        }
+                        habit.id to state
                     }
 
                     HabitListItem(
@@ -115,6 +134,14 @@ class MainViewModel(
         }
     }
 
+    private fun habitApplicable(
+        previousLatestEntry: HabitEntry,
+        currentHabitEntryDate: Long,
+        repeatInfo: HabitRepeatInfo
+    ): Boolean {
+        val applicableLimit = getDaysForRepeatType(repeatInfo.repeatType)
+        return getDaysBetweenTwoDates(previousLatestEntry.date, currentHabitEntryDate) >= applicableLimit
+    }
 
     fun addOrUpdateHabit(addOrUpdateHabitRequest: AddOrUpdateHabitRequest) {
 
@@ -315,8 +342,13 @@ class MainViewModel(
                 if (habitListItemIndex != -1) {
                     val habitListItem = updatedList[habitListItemIndex]
                     val updatedHabitEntries = habitListItem.habitEntries.toMutableMap()
+                    val prevEntry = updatedHabitEntries[habitId]
 
-                    updatedHabitEntries[habitId] = completed
+                    updatedHabitEntries[habitId] = if (completed) {
+                        HabitEntryState.COMPLETED
+                    } else {
+                        prevEntry ?: HabitEntryState.APPLICABLE_AND_INCOMPLETE
+                    }
                     val updatedHabitListItem = habitListItem.copy(habitEntries = updatedHabitEntries)
 
                     updatedList[habitListItemIndex] = updatedHabitListItem

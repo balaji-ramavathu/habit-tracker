@@ -6,5 +6,11 @@ data class HabitListItem(
     val month: Int,
     val monthName: String,
     val year: Int,
-    val habitEntries: Map<Int, Boolean>
+    val habitEntries: Map<Int, HabitEntryState>
 )
+
+enum class HabitEntryState {
+    COMPLETED,      // tick
+    APPLICABLE_AND_INCOMPLETE,  // cross
+    NOT_APPLICABLE      // outlined tick
+}

@@ -53,11 +53,11 @@ fun HabitItem(habit: HabitListItem,
         ) {
             items(habit.habitEntries.toList(),
                 key = {habitEntry -> "${habitEntry.first}::${habit.date}"}) {habitEntry ->
-                val (habitId, completed) = habitEntry
+                val (habitId, habitEntryState) = habitEntry
                 HabitEntryCheckbox(
                     habitId = habitId,
                     date = habit.date,
-                    checked = completed,
+                    habitEntryState = habitEntryState,
                     mainViewModel = mainViewModel,
                     modifier = Modifier.size(24.dp)
                 )
