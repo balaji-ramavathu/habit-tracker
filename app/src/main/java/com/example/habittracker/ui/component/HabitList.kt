@@ -29,6 +29,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,12 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
     val currentYear = mainViewModel.currentYear.observeAsState(calendar.get(Calendar.YEAR))
     val currentMonth = mainViewModel.currentMonth.observeAsState(calendar.get(Calendar.MONTH) + 1)
 
+    val nextMonthButtonEnabled = if (currentYear.value == calendar.get(Calendar.YEAR)) {
+        currentMonth.value <= calendar.get(Calendar.MONTH)
+    } else {
+        true
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -67,23 +74,33 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                         )) {
                     Row (horizontalArrangement = Arrangement.End, modifier = Modifier.padding(8.dp)) {
                         Text(
-                            text = getMonthNameShort(mainViewModel.currentMonth.value).uppercase(),
+                            text = getMonthNameShort(mainViewModel.currentMonth.value).uppercase()
+                                    + if (mainViewModel.currentYear.value != calendar.get(Calendar.YEAR))
+                                    { " ${mainViewModel.currentYear.value}" } else "",
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(8.dp)
                         )
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = {
+                            mainViewModel.updateCurrentMonthAndYear(false)
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowLeft,
                                 tint = MaterialTheme.colorScheme.onBackground,
                                 contentDescription = null
                             )
                         }
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(
+                            enabled = nextMonthButtonEnabled,
+                            onClick = {
+                            mainViewModel.updateCurrentMonthAndYear(true)
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowRight,
-                                tint = MaterialTheme.colorScheme.onBackground,
+                                tint = if (nextMonthButtonEnabled) {
+                                    MaterialTheme.colorScheme.onBackground
+                                } else { Color.LightGray },
                                 contentDescription = null
                             )
                         }

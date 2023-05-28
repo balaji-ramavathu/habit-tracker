@@ -93,3 +93,28 @@ fun getDaysBetweenTwoDates(date1: Long, date2: Long): Int {
     val duration = Duration.between(instant1, instant2).abs()
     return duration.toDays().toInt()
 }
+
+fun getNextMonthAndYear(currentMonth: Int, currentYear: Int): Pair<Int, Int> {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.MONTH, currentMonth - 1)
+    calendar.set(Calendar.YEAR, currentYear)
+    calendar.add(Calendar.MONTH, 1)
+
+    val nextMonth = calendar.get(Calendar.MONTH)
+    val nextYear = calendar.get(Calendar.YEAR)
+
+    return Pair(nextMonth + 1, nextYear)
+}
+
+fun getPreviousMonthAndYear(currentMonth: Int, currentYear: Int): Pair<Int, Int> {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.MONTH, currentMonth - 1)
+    calendar.set(Calendar.YEAR, currentYear)
+    calendar.add(Calendar.MONTH, -1)
+
+    val previousMonth = calendar.get(Calendar.MONTH)
+    val previousYear = calendar.get(Calendar.YEAR)
+
+    return Pair(previousMonth + 1, previousYear)
+}
+

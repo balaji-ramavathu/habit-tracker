@@ -26,7 +26,8 @@ import com.example.habittracker.ui.utils.getDatesAndDaysForMonth
 import com.example.habittracker.ui.utils.getDaysBetweenTwoDates
 import com.example.habittracker.ui.utils.getDurationLeftFromNow
 import com.example.habittracker.ui.utils.getFirstAndLastDayOfMonth
-import com.example.habittracker.ui.utils.getMonthNameShort
+import com.example.habittracker.ui.utils.getNextMonthAndYear
+import com.example.habittracker.ui.utils.getPreviousMonthAndYear
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -123,7 +124,6 @@ class MainViewModel(
                     HabitListItem(
                         date = dateDay.first,
                         day = dateDay.second,
-                        monthName = getMonthNameShort(month),
                         month = month,
                         year = year,
                         habitEntries = habitEntries
@@ -331,6 +331,21 @@ class MainViewModel(
                 updateHabitListItem(habitId, date, completed)
             }
         }
+    }
+
+    fun updateCurrentMonthAndYear(directionIsNext: Boolean) {
+        val updated = if (directionIsNext) {
+            getNextMonthAndYear(
+                currentYear = (_currentYear.value ?: calendar.get(Calendar.YEAR)),
+                currentMonth = ((_currentMonth.value ?: (calendar.get(Calendar.MONTH) + 1))))
+        } else {
+            getPreviousMonthAndYear(
+                currentYear = (_currentYear.value ?: calendar.get(Calendar.YEAR)),
+                currentMonth = ((_currentMonth.value ?: (calendar.get(Calendar.MONTH) + 1))))
+        }
+
+        _currentMonth.postValue(updated.first)
+        _currentYear.postValue(updated.second)
     }
 
     private fun updateHabitListItem(habitId: Int, date: Long, completed: Boolean) {
