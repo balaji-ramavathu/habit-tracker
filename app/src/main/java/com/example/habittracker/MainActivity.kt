@@ -121,10 +121,11 @@ fun MainLayout(mainViewModel: MainViewModel) {
     val habits = mainViewModel.habits.observeAsState(listOf())
     val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
     val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
+    val listNotEmpty = habits.value.isNotEmpty()
     Scaffold(topBar = {
         TopBar()
     }, floatingActionButton = {
-        if (habits.value.isNotEmpty()) {
+        if (listNotEmpty) {
             AnimatedVisibility(visible = isFabVisible.value, enter = fadeIn(), exit = fadeOut()) {
                 FloatingActionView(mainViewModel) {
                     mainViewModel.showOrHideAddOrUpdateHabitView(true)
@@ -134,8 +135,9 @@ fun MainLayout(mainViewModel: MainViewModel) {
     }, floatingActionButtonPosition = FabPosition.Center) { padding ->
         Box(modifier = Modifier
             .padding(paddingValues = padding)
-            .background(MaterialTheme.colorScheme.secondary)) {
-            if (habits.value.isNotEmpty()) {
+            .background(MaterialTheme.colorScheme.secondary)
+        ) {
+            if (listNotEmpty) {
                 HabitList(mainViewModel, isFabVisible)
             } else {
                 EmptyHabitList {

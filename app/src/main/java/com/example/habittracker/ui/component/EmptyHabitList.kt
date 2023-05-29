@@ -37,14 +37,14 @@ fun EmptyHabitList(onAddHabitClick: () -> Unit) {
             modifier = Modifier.size(200.dp)
         )
         Text(
-            text = "Start tracking your habits",
+            text = "Time to kickstart your habits!",
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             color = MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = "Add your first habit to get started!",
+            text = "Your list is feeling a little empty.",
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
             modifier = Modifier.padding(16.dp)
