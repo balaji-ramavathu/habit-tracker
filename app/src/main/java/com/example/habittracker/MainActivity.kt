@@ -21,6 +21,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -32,6 +33,8 @@ import com.example.habittracker.data.Constants.REMINDER_INTENT_DATA_HABIT_ID
 import com.example.habittracker.data.Constants.REMINDER_INTENT_DATA_NOTIFICATION_ID
 import com.example.habittracker.data.Constants.REMINDER_NO_ACTION_INTENT
 import com.example.habittracker.data.Constants.REMINDER_YES_ACTION_INTENT
+import com.example.habittracker.ui.component.AddOrUpdateHabitSheet
+import com.example.habittracker.ui.component.EmptyHabitList
 import com.example.habittracker.ui.component.FloatingActionView
 import com.example.habittracker.ui.component.HabitList
 import com.example.habittracker.ui.component.TopBar
@@ -113,20 +116,54 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainLayout(viewModel: MainViewModel) {
+fun MainLayout(mainViewModel: MainViewModel) {
     val isFabVisible = remember { mutableStateOf(true) }
-
+    val habits = mainViewModel.habits.observeAsState(listOf())
+    val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
+    val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
     Scaffold(topBar = {
         TopBar()
     }, floatingActionButton = {
-        AnimatedVisibility(visible = isFabVisible.value, enter = fadeIn(), exit = fadeOut()) {
-            FloatingActionView(viewModel)
+        if (habits.value.isNotEmpty()) {
+            AnimatedVisibility(visible = isFabVisible.value, enter = fadeIn(), exit = fadeOut()) {
+                FloatingActionView(mainViewModel) {
+                    mainViewModel.showOrHideAddOrUpdateHabitView(true)
+                }
+            }
         }
     }, floatingActionButtonPosition = FabPosition.Center) { padding ->
         Box(modifier = Modifier
             .padding(paddingValues = padding)
             .background(MaterialTheme.colorScheme.secondary)) {
-            HabitList(viewModel, isFabVisible)
+            if (habits.value.isNotEmpty()) {
+                HabitList(mainViewModel, isFabVisible)
+            } else {
+                EmptyHabitList {
+                    mainViewModel.showOrHideAddOrUpdateHabitView(true)
+                }
+            }
+
+            if (showAddOrUpdateAddHabitView.value) {
+                AddOrUpdateHabitSheet(
+                    mainViewModel = mainViewModel,
+                    onDismiss = {
+                        mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                        mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
+                    },
+                    onAddOrUpdateHabitRequest = {
+                        addOrUpdateHabitRequest.value?.let {
+                            mainViewModel.addOrUpdateHabit(it)
+                            mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                            mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
+                        } },
+                    onDeleteHabitRequest = {
+                        addOrUpdateHabitRequest.value?.id?.let { mainViewModel.deleteHabit(it) }.also {
+                            mainViewModel.showOrHideAddOrUpdateHabitView(false)
+                            mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
+                        }
+                    }
+                )
+            }
         }
     }
 }

@@ -26,10 +26,12 @@ import androidx.compose.ui.unit.sp
 import com.example.habittracker.ui.viewmodel.MainViewModel
 
 @Composable
-fun FloatingActionView(mainViewModel: MainViewModel) {
+fun FloatingActionView(
+    mainViewModel: MainViewModel,
+    onAddHabitClick: () -> Unit
+) {
 
-    val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
-    val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
+
     val habits = mainViewModel.habits.observeAsState(listOf())
 
     Card(
@@ -53,34 +55,12 @@ fun FloatingActionView(mainViewModel: MainViewModel) {
                 }
             }
             FloatingActionButton(
-                onClick = {
-                          mainViewModel.showOrHideAddOrUpdateHabitView(true)
-                },
+                onClick = { onAddHabitClick() },
                 containerColor = MaterialTheme.colorScheme.tertiary
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
             }
         }
-        if (showAddOrUpdateAddHabitView.value) {
-            AddOrUpdateHabitSheet(
-                mainViewModel = mainViewModel,
-                onDismiss = {
-                    mainViewModel.showOrHideAddOrUpdateHabitView(false)
-                    mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
-                },
-                onAddOrUpdateHabitRequest = {
-                    addOrUpdateHabitRequest.value?.let {
-                        mainViewModel.addOrUpdateHabit(it)
-                        mainViewModel.showOrHideAddOrUpdateHabitView(false)
-                        mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
-                } },
-                onDeleteHabitRequest = {
-                    addOrUpdateHabitRequest.value?.id?.let { mainViewModel.deleteHabit(it) }.also {
-                        mainViewModel.showOrHideAddOrUpdateHabitView(false)
-                        mainViewModel.recordAddOrUpdateHabitRequestInfo(null)
-                    }
-                }
-            )
-        }
+
     }
 }
