@@ -239,7 +239,12 @@ class MainViewModel(
 
         val inputData = Data.Builder()
             .putInt("habitId", habit.id)
-            .putString("reminderTime", habit.reminderInfo?.reminderTime)
+            .putString("habitName", habit.name)
+            .putLong("habitDate", getDateMillis(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DATE)
+            ))
             .build()
 
         val desiredTimeObj = LocalTime.parse(habit.reminderInfo?.reminderTime)

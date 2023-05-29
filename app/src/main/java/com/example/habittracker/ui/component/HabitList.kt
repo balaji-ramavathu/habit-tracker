@@ -149,7 +149,7 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                 HabitItem(
                     mainViewModel = mainViewModel,
                     habit = habit,
-                    highlightDivision = ((habitList.value.indexOf(habit) + 1) % 6 == 0)
+                    highlightDivision = ((habitList.value.indexOf(habit) + 1) % 7 == 0)
                 )
             }
         }
