@@ -23,7 +23,7 @@ data class HabitEntry(
     @ColumnInfo(name = "id")
     val id: Int = 0,
 
-    @ColumnInfo(name = "habit_id", index = true)
+    @ColumnInfo(name = "habit_id")
     val habitId: Int,
 
     val date: Long,

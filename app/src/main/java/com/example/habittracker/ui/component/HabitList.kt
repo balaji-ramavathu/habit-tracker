@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -112,32 +113,36 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                         Box(Modifier.width(250.dp)) {
                             LazyRow(state = habitIndicatorsListLazyState) {
                                 items(habits.value) {habit ->
+                                    val updatedHabit = rememberUpdatedState(habit)
                                     Box(
-                                        Modifier.padding(horizontal = 4.dp)
-                                        .pointerInput(Unit) {
-                                        detectTapGestures(onLongPress = {
-                                            mainViewModel.recordAddOrUpdateHabitRequestInfo(
-                                                AddOrUpdateHabitRequest(
-                                                    id = habit.id,
-                                                    name = habit.name,
-                                                    color = habit.color,
-                                                    repeatType = habit.repeatInfo.repeatType.let {
-                                                        UiRepeatType.valueOf(it.name) },
-                                                    repeatValue = habit.repeatInfo.repeatValue,
-                                                    reminderTime = habit.reminderInfo?.reminderTime
-                                                )
-                                            ).also {
-                                                mainViewModel.showOrHideAddOrUpdateHabitView(true)
+                                        Modifier
+                                            .padding(horizontal = 4.dp)
+                                            .pointerInput(Unit) {
+                                                detectTapGestures(onLongPress = {
+                                                    val selectedHabit = updatedHabit.value
+                                                    mainViewModel.recordAddOrUpdateHabitRequestInfo(
+                                                        AddOrUpdateHabitRequest(
+                                                            id = selectedHabit.id,
+                                                            name = selectedHabit.name,
+                                                            color = selectedHabit.color,
+                                                            repeatType = selectedHabit.repeatInfo.repeatType.let {
+                                                                UiRepeatType.valueOf(it.name)
+                                                            },
+                                                            repeatValue = selectedHabit.repeatInfo.repeatValue,
+                                                            reminderTime = selectedHabit.reminderInfo?.reminderTime
+                                                        )
+                                                    )
+                                                    mainViewModel.showOrHideAddOrUpdateHabitView(true)
+                                                })
                                             }
-                                        })
-                                    }
                                     ) {
                                         Text(
                                             text = habit.indicator,
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp,
                                             modifier = Modifier.width(24.dp),
-                                            color = MaterialTheme.colorScheme.onBackground)
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
                                     }
                                 }
                             }

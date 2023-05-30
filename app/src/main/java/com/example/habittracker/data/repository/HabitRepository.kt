@@ -13,10 +13,10 @@ class HabitRepository (private val habitDao: HabitDao) {
         return habitDao.byId(id)
     }
 
-    fun addHabit(habit: Habit) {
+    fun addHabit(habit: Habit): Long {
         require(validate(habit)) { "Invalid Habit input request" }
 
-        habitDao.insertHabit(habit)
+        return habitDao.insertHabit(habit)
     }
 
     fun updateHabit(habit: Habit) {

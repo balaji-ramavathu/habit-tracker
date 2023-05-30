@@ -25,6 +25,10 @@ class HabitEntryRepository(private val habitEntryDao: HabitEntryDao) {
         habitEntryDao.updateHabitEntry(habitEntry)
     }
 
+    fun deleteHabitEntry(habitEntry: HabitEntry) {
+        habitEntryDao.delete(habitEntry)
+    }
+
     companion object {
         @Volatile
         private var instance: HabitEntryRepository? = null

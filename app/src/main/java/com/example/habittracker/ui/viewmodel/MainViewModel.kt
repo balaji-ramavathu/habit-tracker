@@ -161,8 +161,7 @@ class MainViewModel(
                             color = addOrUpdateHabitRequest.color ?: "Green",       // TODO:: fix this
                             repeatInfo = HabitRepeatInfo(
                                 repeatType = addOrUpdateHabitRequest.repeatType?.name?.let {
-                                    HabitRepeatType
-                                        .valueOf(it)
+                                    HabitRepeatType.valueOf(it)
                                 } ?: HabitRepeatType.DAILY
                             ),
                             reminderInfo = addOrUpdateHabitRequest.reminderTime?.let {
@@ -204,11 +203,11 @@ class MainViewModel(
                         addedAt = System.currentTimeMillis(),
                         updatedAt = System.currentTimeMillis()
                     )
-                    habitRepository.addHabit(newHabit).also {
-                        scheduleReminder(newHabit)
-                        if (_habits.value != null) {
-                            _habits.postValue(_habits.value!!.plus(newHabit))
-                        }
+                    val generatedId = habitRepository.addHabit(newHabit)
+                    val updatedHabit = newHabit.copy(id = generatedId.toInt())
+                    scheduleReminder(updatedHabit)
+                    if (_habits.value != null) {
+                        _habits.postValue(_habits.value!!.plus(updatedHabit))
                     }
                 }
             }
@@ -297,6 +296,10 @@ class MainViewModel(
     fun deleteHabit(habitId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                habitEntryRepository.getHabitEntries(habitId).forEach {
+                    habitEntryRepository.deleteHabitEntry(it)
+                }
+                workManager.cancelAllWorkByTag(habitId.toString())
                 habitRepository.getHabit(habitId)?.let { habitRepository.deleteHabit(it) }
                 getHabits()
             }

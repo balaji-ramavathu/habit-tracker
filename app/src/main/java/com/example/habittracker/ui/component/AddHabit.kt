@@ -51,6 +51,8 @@ fun AddOrUpdateHabitContent(mainViewModel: MainViewModel,
     val keyboard = LocalSoftwareKeyboardController.current
 
     val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
+    val showDeleteOption = addOrUpdateHabitRequest.value != null &&
+            addOrUpdateHabitRequest.value?.id != null
     Column(
         Modifier
             .fillMaxWidth()
@@ -72,7 +74,7 @@ fun AddOrUpdateHabitContent(mainViewModel: MainViewModel,
                     cursorColor = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth(if(showDeleteOption) 0.6f else 0.8f)
                     .focusRequester(focusRequester),
                 onValueChange = {value -> mainViewModel.recordAddOrUpdateHabitRequestInfo(
                     (addOrUpdateHabitRequest.value)?.copy(name = value)
@@ -92,8 +94,7 @@ fun AddOrUpdateHabitContent(mainViewModel: MainViewModel,
                 Icon(painter = painterResource(id = R.drawable.baseline_arrow_upward_black_24dp), null)
             }
 
-            if (addOrUpdateHabitRequest.value != null &&
-                addOrUpdateHabitRequest.value?.id != null) {
+            if (showDeleteOption) {
                 IconButton(
                     onClick = {onDeleteHabitRequest()},
                     modifier = Modifier
