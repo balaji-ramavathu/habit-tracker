@@ -102,7 +102,7 @@ class HabitNotificationWorker(
         )
 
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.baseline_arrow_upward_black_24dp)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Reminder: $habitName")
             .setContentText("Did you complete your $habitName today?")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

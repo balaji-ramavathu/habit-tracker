@@ -2,6 +2,7 @@ package com.example.habittracker.ui.utils
 
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Calendar
@@ -28,7 +29,7 @@ fun getMonthNameShort(monthNum: Int?): String {
 
 fun getDatesAndDaysForMonth(year: Int, month: Int): List<Pair<Int, String>> {
     val calendar = Calendar.getInstance()
-    calendar.set(year, month, 1)
+    calendar.set(year, month - 1, 1)
     val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     val datesAndDays = mutableListOf<Pair<Int, String>>()
     for (day in 1..daysInMonth) {
@@ -95,26 +96,16 @@ fun getDaysBetweenTwoDates(date1: Long, date2: Long): Int {
 }
 
 fun getNextMonthAndYear(currentMonth: Int, currentYear: Int): Pair<Int, Int> {
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.MONTH, currentMonth - 1)
-    calendar.set(Calendar.YEAR, currentYear)
-    calendar.add(Calendar.MONTH, 1)
-
-    val nextMonth = calendar.get(Calendar.MONTH)
-    val nextYear = calendar.get(Calendar.YEAR)
-
-    return Pair(nextMonth + 1, nextYear)
+    val currentDate = LocalDate.of(currentYear, currentMonth, 1)
+    val nextMonthDate = currentDate.plusMonths(1)
+    return Pair(nextMonthDate.monthValue, nextMonthDate.year)
 }
+
 
 fun getPreviousMonthAndYear(currentMonth: Int, currentYear: Int): Pair<Int, Int> {
-    val calendar = Calendar.getInstance()
-    calendar.set(Calendar.MONTH, currentMonth - 1)
-    calendar.set(Calendar.YEAR, currentYear)
-    calendar.add(Calendar.MONTH, -1)
-
-    val previousMonth = calendar.get(Calendar.MONTH)
-    val previousYear = calendar.get(Calendar.YEAR)
-
-    return Pair(previousMonth + 1, previousYear)
+    val currentDate = LocalDate.of(currentYear, currentMonth, 1)
+    val previousMonthDate = currentDate.minusMonths(1)
+    return Pair(previousMonthDate.monthValue, previousMonthDate.year)
 }
+
 
