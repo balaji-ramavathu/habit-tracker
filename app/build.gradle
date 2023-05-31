@@ -5,11 +5,11 @@ plugins {
 apply plugin: 'kotlin-kapt'
 
 android {
-    namespace 'com.example.habittracker'
+    namespace 'com.habittracker.haby'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.habittracker"
+        applicationId 'com.habittracker.haby'
         minSdk 26
         targetSdk 33
         versionCode 1
