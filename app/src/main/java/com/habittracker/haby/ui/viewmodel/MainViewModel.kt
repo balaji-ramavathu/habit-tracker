@@ -107,7 +107,7 @@ class MainViewModel(
                             HabitEntryState.COMPLETED
                         } else {
                             val previousLatestEntry = habitEntriesMap[habit.id]
-                                ?.filter { it.date <= dateMillis && it.completed }
+                                ?.filter { it.date < dateMillis && it.completed }
                                 ?.maxByOrNull { it.date }
                             if (previousLatestEntry == null) {
                                 HabitEntryState.APPLICABLE_AND_INCOMPLETE
@@ -370,7 +370,11 @@ class MainViewModel(
                     updatedHabitEntries[habitId] = if (completed) {
                         HabitEntryState.COMPLETED
                     } else {
-                        prevEntry ?: HabitEntryState.APPLICABLE_AND_INCOMPLETE
+                        if (prevEntry == HabitEntryState.NOT_APPLICABLE) {
+                            HabitEntryState.NOT_APPLICABLE
+                        } else {
+                            HabitEntryState.APPLICABLE_AND_INCOMPLETE
+                        }
                     }
                     val updatedHabitListItem = habitListItem.copy(habitEntries = updatedHabitEntries)
 
