@@ -107,7 +107,7 @@ class MainViewModel(
                             HabitEntryState.COMPLETED
                         } else {
                             val previousLatestEntry = habitEntriesMap[habit.id]
-                                ?.filter { it.date <= dateMillis }
+                                ?.filter { it.date <= dateMillis && it.completed }
                                 ?.maxByOrNull { it.date }
                             if (previousLatestEntry == null) {
                                 HabitEntryState.APPLICABLE_AND_INCOMPLETE
