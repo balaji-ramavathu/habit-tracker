@@ -39,6 +39,7 @@ import com.habittracker.haby.ui.model.AddOrUpdateHabitRequest
 import com.habittracker.haby.ui.model.UiRepeatType
 import com.habittracker.haby.ui.utils.getMonthNameShort
 import com.habittracker.haby.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.util.Calendar
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -109,41 +110,40 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                     Row (modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)) {
-                        Spacer(modifier = Modifier.width(96.dp))
-                        Box(Modifier.width(250.dp)) {
-                            LazyRow(state = habitIndicatorsListLazyState) {
-                                items(habits.value) {habit ->
-                                    val updatedHabit = rememberUpdatedState(habit)
-                                    Box(
-                                        Modifier
-                                            .padding(horizontal = 4.dp)
-                                            .pointerInput(Unit) {
-                                                detectTapGestures(onLongPress = {
-                                                    val selectedHabit = updatedHabit.value
-                                                    mainViewModel.recordAddOrUpdateHabitRequestInfo(
-                                                        AddOrUpdateHabitRequest(
-                                                            id = selectedHabit.id,
-                                                            name = selectedHabit.name,
-                                                            color = selectedHabit.color,
-                                                            repeatType = selectedHabit.repeatInfo.repeatType.let {
-                                                                UiRepeatType.valueOf(it.name)
-                                                            },
-                                                            repeatValue = selectedHabit.repeatInfo.repeatValue,
-                                                            reminderTime = selectedHabit.reminderInfo?.reminderTime
-                                                        )
+                        Spacer(modifier = Modifier.width(100.dp))
+                        LazyRow(state = habitIndicatorsListLazyState,
+                            modifier = Modifier.width(280.dp), userScrollEnabled = true) {
+                            items(habits.value) {habit ->
+                                val updatedHabit = rememberUpdatedState(habit)
+                                Box(
+                                    Modifier
+                                        .padding(horizontal = 4.dp)
+                                        .pointerInput(Unit) {
+                                            detectTapGestures(onLongPress = {
+                                                val selectedHabit = updatedHabit.value
+                                                mainViewModel.recordAddOrUpdateHabitRequestInfo(
+                                                    AddOrUpdateHabitRequest(
+                                                        id = selectedHabit.id,
+                                                        name = selectedHabit.name,
+                                                        color = selectedHabit.color,
+                                                        repeatType = selectedHabit.repeatInfo.repeatType.let {
+                                                            UiRepeatType.valueOf(it.name)
+                                                        },
+                                                        repeatValue = selectedHabit.repeatInfo.repeatValue,
+                                                        reminderTime = selectedHabit.reminderInfo?.reminderTime
                                                     )
-                                                    mainViewModel.showOrHideAddOrUpdateHabitView(true)
-                                                })
-                                            }
-                                    ) {
-                                        Text(
-                                            text = habit.indicator,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.width(24.dp),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
+                                                )
+                                                mainViewModel.showOrHideAddOrUpdateHabitView(true)
+                                            })
+                                        }
+                                ) {
+                                    Text(
+                                        text = habit.indicator,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.width(24.dp),
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
                                 }
                             }
                         }
@@ -161,10 +161,17 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
     }
     
     LaunchedEffect(habitIndicatorsListLazyState, habits.value, currentMonth.value, currentYear.value, habitList.value) {
-        val firstVisibleItem = habitIndicatorsListLazyState.firstVisibleItemIndex
-        val lastVisibleItem = habitIndicatorsListLazyState.firstVisibleItemIndex + habitIndicatorsListLazyState.layoutInfo.visibleItemsInfo.size - 1
-        val visibleItems = habits.value.subList(firstVisibleItem, lastVisibleItem + 1)
-        mainViewModel.getHabitListItems(visibleItems, currentYear.value, currentMonth.value)
+        snapshotFlow {
+            habitIndicatorsListLazyState.layoutInfo.visibleItemsInfo
+        }.distinctUntilChanged()
+            .collect { visibleItems ->
+                val firstVisibleItem = visibleItems.firstOrNull()?.index ?: 0
+                val lastVisibleItem = visibleItems.lastOrNull()?.index ?: 0
+
+                val visibleIndicators = habits.value.subList(firstVisibleItem, lastVisibleItem + 1)
+                mainViewModel.getHabitListItems(visibleIndicators, currentYear.value, currentMonth.value)
+
+            }
     }
 
     LaunchedEffect(habitItemsListLazyState) {
