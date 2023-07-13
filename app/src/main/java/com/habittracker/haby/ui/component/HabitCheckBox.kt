@@ -39,6 +39,7 @@ fun HabitEntryCheckbox(
     date: Int,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    showSnackbar: (message: String) -> Unit,
 ) {
     val boxSize = 40.dp
     val tickSize = 20.dp
@@ -53,13 +54,15 @@ fun HabitEntryCheckbox(
             .clip(CircleShape)
             .background(
                 if (enabled) {
-                    when(updatedChecked.value) {
+                    when (updatedChecked.value) {
                         COMPLETED -> {
                             MaterialTheme.colorScheme.secondary
                         }
+
                         APPLICABLE_AND_INCOMPLETE -> {
                             Color.LightGray
                         }
+
                         NOT_APPLICABLE -> {
                             MaterialTheme.colorScheme.secondary
                         }
@@ -69,14 +72,18 @@ fun HabitEntryCheckbox(
                 }
             )
             .pointerInput(Unit) {
-                detectTapGestures(onLongPress = {
-                    mainViewModel.addOrUpdateHabitEntry(
-                        habitId,
-                        getDateMillis(currentYear.value, currentMonth.value, date),
-                        updatedChecked.value != COMPLETED
-                    )
-
-                })
+                detectTapGestures(
+                    onLongPress = {
+                        mainViewModel.addOrUpdateHabitEntry(
+                            habitId,
+                            getDateMillis(currentYear.value, currentMonth.value, date),
+                            updatedChecked.value != COMPLETED
+                        )
+                    },
+                    onPress = {
+                        showSnackbar("Long press to track the habit!")
+                    }
+                )
             },
         contentAlignment = Alignment.Center
     ) {

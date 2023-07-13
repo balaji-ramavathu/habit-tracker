@@ -37,6 +37,7 @@ import com.habittracker.haby.ui.component.AddOrUpdateHabitSheet
 import com.habittracker.haby.ui.component.EmptyHabitList
 import com.habittracker.haby.ui.component.FloatingActionView
 import com.habittracker.haby.ui.component.HabitList
+import com.habittracker.haby.ui.component.SnackbarWithoutScaffold
 import com.habittracker.haby.ui.component.TopBar
 import com.habittracker.haby.ui.theme.HabitTrackerTheme
 import com.habittracker.haby.ui.viewmodel.MainViewModel
@@ -122,6 +123,9 @@ fun MainLayout(mainViewModel: MainViewModel) {
     val showAddOrUpdateAddHabitView = mainViewModel.showAddOrUpdateAddHabitView.observeAsState(false)
     val addOrUpdateHabitRequest = mainViewModel.addOrUpdateHabitData.observeAsState()
     val listNotEmpty = habits.value.isNotEmpty()
+    var showSnackbar = remember { mutableStateOf(false) }
+    var snackbarMessage = remember { mutableStateOf("") }
+
     Scaffold(topBar = {
         TopBar()
     }, floatingActionButton = {
@@ -138,7 +142,15 @@ fun MainLayout(mainViewModel: MainViewModel) {
             .background(MaterialTheme.colorScheme.secondary)
         ) {
             if (listNotEmpty) {
-                HabitList(mainViewModel, isFabVisible)
+                HabitList(mainViewModel, isFabVisible, showSnackbar = { message ->
+                    showSnackbar.value = true
+                    snackbarMessage.value = message
+                })
+                SnackbarWithoutScaffold(
+                    message = snackbarMessage.value,
+                    showSb = showSnackbar.value,
+                    showSnackbar = {showSnackbar.value = it}
+                )
             } else {
                 EmptyHabitList {
                     mainViewModel.showOrHideAddOrUpdateHabitView(true)

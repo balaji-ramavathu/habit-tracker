@@ -25,6 +25,7 @@ import com.habittracker.haby.ui.viewmodel.MainViewModel
 @Composable
 fun HabitItem(habit: HabitListItem,
               highlightDivision: Boolean,
+              showSnackbar: (message: String) -> Unit,
               mainViewModel: MainViewModel) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -59,7 +60,8 @@ fun HabitItem(habit: HabitListItem,
                     date = habit.date,
                     habitEntryState = habitEntryState,
                     mainViewModel = mainViewModel,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    showSnackbar = showSnackbar
                 )
             }
         }

@@ -31,7 +31,6 @@ fun FloatingActionView(
     onAddHabitClick: () -> Unit
 ) {
 
-
     val habits = mainViewModel.habits.observeAsState(listOf())
 
     Card(

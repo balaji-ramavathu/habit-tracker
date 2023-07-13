@@ -44,7 +44,10 @@ import java.util.Calendar
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>) {
+fun HabitList(
+    mainViewModel: MainViewModel,
+    isFabVisible: MutableState<Boolean>,
+    showSnackbar: (message: String) -> Unit) {
 
     val habits = mainViewModel.habits.observeAsState(listOf())
     val habitList = mainViewModel.habitListItems.observeAsState(listOf())
@@ -154,7 +157,8 @@ fun HabitList(mainViewModel: MainViewModel, isFabVisible: MutableState<Boolean>)
                 HabitItem(
                     mainViewModel = mainViewModel,
                     habit = habit,
-                    highlightDivision = ((habitList.value.indexOf(habit) + 1) % 7 == 0)
+                    highlightDivision = ((habitList.value.indexOf(habit) + 1) % 7 == 0),
+                    showSnackbar = {message -> showSnackbar(message)},
                 )
             }
         }
