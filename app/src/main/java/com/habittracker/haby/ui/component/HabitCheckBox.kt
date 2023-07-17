@@ -80,7 +80,7 @@ fun HabitEntryCheckbox(
                             updatedChecked.value != COMPLETED
                         )
                     },
-                    onPress = {
+                    onTap = {
                         showSnackbar("Long press to track the habit!")
                     }
                 )
